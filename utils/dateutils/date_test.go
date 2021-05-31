@@ -8,7 +8,7 @@ import (
 )
 
 func TestGetDateTimeNow(t *testing.T) {
-	assert.Equal(t, time.Now().UTC(), GetDateTimeNow())
+	assert.Equal(t, time.Now().UTC().Day(), GetDateTimeNow().Day())
 }
 
 func TestGetDateTimeNowFormat(t *testing.T) {
