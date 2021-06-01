@@ -1,12 +1,13 @@
-name: Go CI
+name: Build & Tag
 
 on:
   push:
     branches:
-      - main
+      - master
       - develop
   pull_request:
     branches:
+      - master
       - develop
   workflow_dispatch:
 
@@ -39,5 +40,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: true
-          RELEASE_BRANCHES: main
+          RELEASE_BRANCHES: master
           INITIAL_VERSION: 1.0.0
