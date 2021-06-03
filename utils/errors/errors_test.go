@@ -46,11 +46,10 @@ func TestNotFoundError(t *testing.T) {
 }
 
 func TestInternalServerError(t *testing.T) {
-	msg := "some message"
-	err := InternalServerError(msg)
+	err := InternalServerError()
 	assert.Equal(t, http.StatusInternalServerError, err.Status)
 	assert.Equal(t, http.StatusText(http.StatusInternalServerError), err.Error)
-	assert.Equal(t, msg, err.Message)
+	assert.Equal(t, InternalServerErrMsg, err.Message)
 }
 
 func TestMissingMandatoryParamError(t *testing.T) {

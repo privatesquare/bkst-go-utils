@@ -98,7 +98,7 @@ func TestGinZap(t *testing.T) {
 
 	apiPath := "/test"
 	msg := "some message"
-	r.GET(apiPath, func (ctx *gin.Context) {
+	r.GET(apiPath, func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, msg)
 	})
 
@@ -120,9 +120,9 @@ func TestGinZapError(t *testing.T) {
 
 	apiPath := "/test"
 	msg := "some message"
-	r.GET(apiPath, func (ctx *gin.Context) {
+	r.GET(apiPath, func(ctx *gin.Context) {
 		ctx.Errors = append(ctx.Errors, &gin.Error{
-			Err:  errors.NewError(""),
+			Err: errors.NewError(""),
 		})
 		ctx.JSON(http.StatusOK, msg)
 	})

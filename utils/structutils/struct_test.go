@@ -7,8 +7,8 @@ import (
 
 type User struct {
 	FirstName string `yaml:"first_name_yaml" json:"first_name_json" mapstructure:"first_name_ms"`
-	LastName string `yaml:"last_name_yaml" json:"last_name_json"`
-	Age int64 `json:"age,omitempty"`
+	LastName  string `yaml:"last_name_yaml" json:"last_name_json"`
+	Age       int64  `json:"age,omitempty"`
 }
 
 func TestGetFieldTagValue(t *testing.T) {

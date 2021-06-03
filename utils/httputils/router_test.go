@@ -2,7 +2,6 @@ package httputils
 
 import (
 	"bytes"
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
@@ -11,26 +10,15 @@ import (
 )
 
 const (
-	healthApiPath = "/health"
+	healthApiPath   = "/health"
 	notFoundApiPath = "/notFound"
 )
 
 var (
-	successResponse = `{"message":"OK"}`
-
-	pathNotfoundResponse = `{"message":"Path Not Found"}`
-
+	successResponse          = `{"message":"OK"}`
+	pathNotfoundResponse     = `{"message":"Path Not Found"}`
 	methodNotAllowedResponse = `{"message":"Method Not Allowed"}`
 )
-
-func newRouter() *gin.Engine {
-	r := gin.Default()
-	r.GET(healthApiPath, Health)
-	r.NoRoute(NoRoute)
-	r.HandleMethodNotAllowed = true
-	r.NoMethod(MethodNotAllowed)
-	return r
-}
 
 func readResponseBody(body *bytes.Buffer, t *testing.T) string {
 	byt, err := ioutil.ReadAll(body)
@@ -41,7 +29,8 @@ func readResponseBody(body *bytes.Buffer, t *testing.T) string {
 }
 
 func TestHealth(t *testing.T) {
-	r := newRouter()
+	r := NewRouter()
+	r.GET(healthApiPath, Health)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, healthApiPath, nil)
 	r.ServeHTTP(w, req)
@@ -51,8 +40,7 @@ func TestHealth(t *testing.T) {
 }
 
 func TestNoRoute(t *testing.T) {
-	r := newRouter()
-
+	r := NewRouter()
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, notFoundApiPath, nil)
 	r.ServeHTTP(w, req)
@@ -62,8 +50,8 @@ func TestNoRoute(t *testing.T) {
 }
 
 func TestMethodNotAllowed(t *testing.T) {
-	r := newRouter()
-
+	r := NewRouter()
+	r.GET(healthApiPath, Health)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, healthApiPath, nil)
 	r.ServeHTTP(w, req)
@@ -71,4 +59,3 @@ func TestMethodNotAllowed(t *testing.T) {
 	assert.Equal(t, http.StatusMethodNotAllowed, w.Code)
 	assert.Equal(t, methodNotAllowedResponse, readResponseBody(w.Body, t))
 }
-

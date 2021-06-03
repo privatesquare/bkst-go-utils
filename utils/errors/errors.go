@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	InternalServerErrMsg        = "Unable to process the request due to an internal error. Please contact the systems administrator"
 	missingMandatoryParamErrMsg = "Missing mandatory parameter(s) : %v"
 	invalidPasswordErrMsg       = "password should be at least 8 characters long with at least one number, one uppercase letter, one lowercase letter and one special character"
 	passwordEncryptionErrMsg    = "password encryption error: %v"
@@ -59,9 +60,9 @@ func NotFoundError(message string) *RestErr {
 	}
 }
 
-func InternalServerError(message string) *RestErr {
+func InternalServerError() *RestErr {
 	return &RestErr{
-		Message: message,
+		Message: InternalServerErrMsg,
 		Status:  http.StatusInternalServerError,
 		Error:   http.StatusText(http.StatusInternalServerError),
 	}

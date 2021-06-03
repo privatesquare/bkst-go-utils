@@ -1,10 +1,21 @@
 package httputils
 
-// Health health controller
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/privatesquare/bkst-go-utils/utils/logger"
 	"net/http"
 )
+
+func NewRouter() *gin.Engine {
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.New()
+	r.Use(logger.GinZap())
+	r.Use(gin.Recovery())
+	r.NoRoute(NoRoute)
+	r.HandleMethodNotAllowed = true
+	r.NoMethod(MethodNotAllowed)
+	return r
+}
 
 func Health(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, RestMsg{Message: http.StatusText(http.StatusOK)})

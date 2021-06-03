@@ -50,7 +50,7 @@ func TestVerifyPassword(t *testing.T) {
 func TestEncryptPassword(t *testing.T) {
 	password := "somepassword@123"
 	ePass, err := EncryptPassword(password, "")
-	if assert.NoError(t, err){
+	if assert.NoError(t, err) {
 		assert.NotEqual(t, password, ePass)
 	}
 }
