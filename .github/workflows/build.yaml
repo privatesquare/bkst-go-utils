@@ -20,7 +20,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           fetch-depth: '0'
 
@@ -32,12 +32,6 @@ jobs:
       - name: Test
         run: go test -cover -coverprofile=c.out ./...
 
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
       - name: Bump version and push tag
         id: bump_version
         uses: anothrNick/github-tag-action@1.26.0
@@ -48,3 +42,22 @@ jobs:
           RELEASE_BRANCHES: master
           INITIAL_VERSION: 1.0.0
           DEFAULT_BUMP: patch
+
+      - name: Get Version for previous step
+        id: get_version
+        uses: bhowell2/github-substring-action@v1.0.0
+        if: github.event_name != 'pull_request'
+        with:
+          value: ${{ steps.bump_version.outputs.tag }}
+          index_of_str: "v"
+          output_name: version
+
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.version=${{ steps.get_version.outputs.version }}
