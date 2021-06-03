@@ -60,4 +60,4 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.version=${{ steps.get_version.outputs.version }}
+            -Dsonar.projectVersion=${{ steps.get_version.outputs.version }}
