@@ -2,7 +2,7 @@ package logger
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/private-square/bkst-users-api/utils/dateutils"
+	"github.com/privatesquare/bkst-go-utils/utils/dateutils"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"log"

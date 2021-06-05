@@ -6,7 +6,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
-	"github.com/private-square/bkst-users-api/utils/errors"
+	"github.com/privatesquare/bkst-go-utils/utils/errors"
 	"io"
 	mr "math/rand"
 	"time"

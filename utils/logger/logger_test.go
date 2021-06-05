@@ -3,7 +3,7 @@ package logger
 import (
 	"bytes"
 	"github.com/gin-gonic/gin"
-	"github.com/private-square/bkst-users-api/utils/errors"
+	"github.com/privatesquare/bkst-go-utils/utils/errors"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"net/http"

@@ -1,7 +1,7 @@
 package secrets
 
 import (
-	"github.com/private-square/bkst-users-api/utils/errors"
+	"github.com/privatesquare/bkst-go-utils/utils/errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
