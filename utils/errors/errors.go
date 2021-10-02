@@ -7,11 +7,17 @@ import (
 )
 
 const (
-	InternalServerErrMsg        = "Unable to process the request due to an internal error. Please contact the systems administrator"
-	missingMandatoryParamErrMsg = "Missing mandatory parameter(s) : %v"
-	invalidPasswordErrMsg       = "password should be at least 8 characters long with at least one number, one uppercase letter, one lowercase letter and one special character"
-	passwordEncryptionErrMsg    = "password encryption error: %v"
-	passwordDecryptionErrMsg    = "password decryption error: %v"
+	MissingMandatoryParamErrMsg       = "Missing mandatory parameter(s) : %v"
+	internalServerErrMsg              = "Unable to process the request due to an internal error. Please contact the system administrator"
+	missingStartupConfigurationErrMsg = "Server startup failed because of missing configuration : %v"
+	invalidPasswordErrMsg             = "password should be at least 8 characters long with at least one number, one uppercase letter, one lowercase letter and one special character"
+	passwordEncryptionErrMsg          = "password encryption error: %v"
+	passwordDecryptionErrMsg          = "password decryption error: %v"
+	regexCompileErrMsg                = "Unable to compile regex : %v"
+	jsonMarshalErrMsg                 = "JSON marshal error : %v"
+	jsonUnMarshalErrMsg               = "JSON unmarshal error : %v"
+	yamlMarshalErrMsg                 = "YAML marshal error : %v"
+	yamlUnmarshalErrMsg               = "YAML unmarshal error : %v"
 )
 
 var (
@@ -19,9 +25,9 @@ var (
 )
 
 type RestErr struct {
-	Message string `json:"message"`
-	Status  int    `json:"status"`
-	Error   string `json:"error"`
+	Message    string `json:"message"`
+	StatusCode int    `json:"status"`
+	Error      string `json:"error"`
 }
 
 func NewError(msg string) error {
@@ -30,42 +36,58 @@ func NewError(msg string) error {
 
 func BadRequestError(message string) *RestErr {
 	return &RestErr{
-		Message: message,
-		Status:  http.StatusBadRequest,
-		Error:   http.StatusText(http.StatusBadRequest),
+		Message:    message,
+		StatusCode: http.StatusBadRequest,
+		Error:      http.StatusText(http.StatusBadRequest),
 	}
 }
 
 func UnauthorizedError(message string) *RestErr {
 	return &RestErr{
-		Message: message,
-		Status:  http.StatusUnauthorized,
-		Error:   http.StatusText(http.StatusUnauthorized),
+		Message:    message,
+		StatusCode: http.StatusUnauthorized,
+		Error:      http.StatusText(http.StatusUnauthorized),
 	}
 }
 
 func ForbiddenError(message string) *RestErr {
 	return &RestErr{
-		Message: message,
-		Status:  http.StatusForbidden,
-		Error:   http.StatusText(http.StatusForbidden),
+		Message:    message,
+		StatusCode: http.StatusForbidden,
+		Error:      http.StatusText(http.StatusForbidden),
 	}
 }
 
 func NotFoundError(message string) *RestErr {
 	return &RestErr{
-		Message: message,
-		Status:  http.StatusNotFound,
-		Error:   http.StatusText(http.StatusNotFound),
+		Message:    message,
+		StatusCode: http.StatusNotFound,
+		Error:      http.StatusText(http.StatusNotFound),
+	}
+}
+
+func ConflictError(message string) *RestErr {
+	return &RestErr{
+		Message:    message,
+		StatusCode: http.StatusConflict,
+		Error:      http.StatusText(http.StatusConflict),
 	}
 }
 
 func InternalServerError() *RestErr {
 	return &RestErr{
-		Message: InternalServerErrMsg,
-		Status:  http.StatusInternalServerError,
-		Error:   http.StatusText(http.StatusInternalServerError),
+		Message:    internalServerErrMsg,
+		StatusCode: http.StatusInternalServerError,
+		Error:      http.StatusText(http.StatusInternalServerError),
 	}
+}
+
+// MissingStartupConfigurationError represents an error when a mandatory parameter is missing
+type MissingStartupConfigurationError []string
+
+// Error returns the formatted MissingMandatoryParamError
+func (e MissingStartupConfigurationError) Error() string {
+	return fmt.Sprintf(missingStartupConfigurationErrMsg, []string(e))
 }
 
 // MissingMandatoryParamError represents an error when a mandatory parameter is missing
@@ -73,7 +95,7 @@ type MissingMandatoryParamError []string
 
 // Error returns the formatted MissingMandatoryParamError
 func (e MissingMandatoryParamError) Error() string {
-	return fmt.Sprintf(missingMandatoryParamErrMsg, []string(e))
+	return fmt.Sprintf(MissingMandatoryParamErrMsg, []string(e))
 }
 
 type PasswordEncryptionError struct {
@@ -90,4 +112,54 @@ type PasswordDecryptionError struct {
 
 func (e PasswordDecryptionError) Error() string {
 	return fmt.Sprintf(passwordDecryptionErrMsg, e.Err)
+}
+
+// RegexCompileError represents an error when a regex compilation fails
+type RegexCompileError struct {
+	Err error
+}
+
+// Error returns the formatted RegexCompileError
+func (rc RegexCompileError) Error() string {
+	return fmt.Sprintf(regexCompileErrMsg, rc.Err)
+}
+
+// JSONMarshalError represents an error when json marshal fails
+type JSONMarshalError struct {
+	Err error
+}
+
+// Error returns the formatted JSONMarshalError
+func (jm JSONMarshalError) Error() string {
+	return fmt.Sprintf(jsonMarshalErrMsg, jm.Err)
+}
+
+// JSONUnMarshalError represents an error when json unmarshal fails
+type JSONUnMarshalError struct {
+	Err error
+}
+
+// Error returns the formatted JSONUnMarshalError
+func (jum JSONUnMarshalError) Error() string {
+	return fmt.Sprintf(jsonUnMarshalErrMsg, jum.Err)
+}
+
+// YAMLMarshalError represents an error when yaml marshal fails
+type YAMLMarshalError struct {
+	Err error
+}
+
+// Error returns the formatted YAMLMarshalError
+func (ym YAMLMarshalError) Error() string {
+	return fmt.Sprintf(yamlMarshalErrMsg, ym.Err)
+}
+
+// YAMLUnMarshalError represents an error when yaml unmarshal fails
+type YAMLUnMarshalError struct {
+	Err error
+}
+
+// Error returns the formatted YAMLUnMarshalError
+func (yum YAMLUnMarshalError) Error() string {
+	return fmt.Sprintf(yamlUnmarshalErrMsg, yum.Err)
 }

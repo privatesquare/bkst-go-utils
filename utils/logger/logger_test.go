@@ -3,6 +3,8 @@ package logger
 import (
 	"bytes"
 	"github.com/gin-gonic/gin"
+	"github.com/go-resty/resty/v2"
+	"github.com/jarcoal/httpmock"
 	"github.com/privatesquare/bkst-go-utils/utils/errors"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
@@ -14,7 +16,8 @@ import (
 )
 
 var (
-	Sink *MemorySink
+	Sink    *MemorySink
+	baseUrl = "https://test.com"
 )
 
 // MemorySink implements zap.Sink by writing all messages to a buffer.
@@ -29,10 +32,10 @@ func (s *MemorySink) Close() error { return nil }
 func (s *MemorySink) Sync() error  { return nil }
 
 func init() {
-	configureMockLogger()
+	configureMockLogger(DefaultLogLevel)
 }
 
-func configureMockLogger() {
+func configureMockLogger(logLevel string) {
 	// Create a sink instance, and register it with zap for the "memory"
 	// protocol.
 	Sink = &MemorySink{new(bytes.Buffer)}
@@ -41,10 +44,9 @@ func configureMockLogger() {
 	})
 
 	// Redirect all messages to the MemorySink.
-	config := getLoggerConfig()
+	config := GetLoggerConfig(logLevel)
 	config.OutputPaths = []string{"memory://"}
-
-	setLoggerConfig(config)
+	SetLoggerConfig(config)
 }
 
 func TestInfo(t *testing.T) {
@@ -69,6 +71,31 @@ func TestWarn(t *testing.T) {
 
 	assert.True(t, strings.Contains(output, "\"level\":\"warn\""))
 	assert.True(t, strings.Contains(output, msg))
+}
+
+func TestDebug(t *testing.T) {
+	configureMockLogger(debugLogLevel)
+
+	msg := "some debug message"
+	Debug(msg)
+
+	// Assert sink contents
+	output := Sink.String()
+	t.Logf("output = %s", output)
+
+	assert.True(t, strings.Contains(output, "\"level\":\"debug\""))
+	assert.True(t, strings.Contains(output, msg))
+	configureMockLogger(debugLogLevel)
+}
+
+func TestPanic(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("The code did not panic")
+		}
+	}()
+	msg := "some panic message"
+	Panic(msg)
 }
 
 func TestError(t *testing.T) {
@@ -137,6 +164,32 @@ func TestGinZapError(t *testing.T) {
 
 	assert.True(t, strings.Contains(output, "\"level\":\"error\""))
 	assert.True(t, strings.Contains(output, "\"caller\":\"gin"))
+}
+
+func TestRestyDebugLogs(t *testing.T) {
+	client := resty.New().SetHostURL(baseUrl)
+	httpmock.ActivateNonDefault(client.GetClient())
+	defer httpmock.DeactivateAndReset()
+
+	responder := httpmock.NewStringResponder(http.StatusOK, "someString")
+	httpmock.RegisterResponder(http.MethodGet, "/", responder)
+
+	resp, err := client.R().Get("/")
+	assert.NoError(t, err)
+
+	configureMockLogger(debugLogLevel)
+
+	RestyDebugLogs(resp)
+
+	// Assert sink contents
+	output := Sink.String()
+	t.Logf("output = %s", output)
+
+	assert.True(t, strings.Contains(output, "Request Url: "+baseUrl))
+	assert.True(t, strings.Contains(output, "Request Header: map[Authorization:[]"))
+	assert.True(t, strings.Contains(output, "Request Body: <nil>"))
+	assert.True(t, strings.Contains(output, "someString"))
+	configureMockLogger(debugLogLevel)
 }
 
 func newRouter() *gin.Engine {

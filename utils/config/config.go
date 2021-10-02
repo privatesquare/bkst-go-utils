@@ -63,12 +63,12 @@ func validate(c interface{}) error {
 	sr := reflect.ValueOf(c).Elem()
 
 	for i := 0; i < sr.NumField(); i++ {
-		if strings.TrimSpace(sr.Field(i).String()) == "" {
+		if strings.TrimSpace(sr.Field(i).String()) == "" && sr.Type().Field(i).Tag.Get("required") == "true" {
 			missingParams = append(missingParams, sr.Type().Field(i).Tag.Get("mapstructure"))
 		}
 	}
 	if len(missingParams) > 0 {
-		err := errors.MissingMandatoryParamError(missingParams)
+		err := errors.MissingStartupConfigurationError(missingParams)
 		logger.Error(err.Error(), nil)
 		return err
 	}

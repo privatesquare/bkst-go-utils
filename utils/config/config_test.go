@@ -27,9 +27,9 @@ MOCK_PASSWORD=%s`
 )
 
 type MockCfg struct {
-	Url      string `mapstructure:"MOCK_URL"`
-	Username string `mapstructure:"MOCK_USERNAME"`
-	Password string `mapstructure:"MOCK_PASSWORD"`
+	Url      string `mapstructure:"MOCK_URL" required:"true"`
+	Username string `mapstructure:"MOCK_USERNAME" required:"true"`
+	Password string `mapstructure:"MOCK_PASSWORD" required:"true"`
 }
 
 func TestAddConfigPath(t *testing.T) {
@@ -99,7 +99,7 @@ func TestLoad_EmptyCgf(t *testing.T) {
 	cfg := &MockCfg{}
 	err := Load(cfg)
 	if assert.Error(t, err) {
-		assert.EqualError(t, err, errors.MissingMandatoryParamError([]string{"MOCK_URL", "MOCK_USERNAME", "MOCK_PASSWORD"}).Error())
+		assert.EqualError(t, err, errors.MissingStartupConfigurationError([]string{"MOCK_URL", "MOCK_USERNAME", "MOCK_PASSWORD"}).Error())
 	}
 }
 
@@ -114,7 +114,7 @@ func TestLoad_IncompleteCgf(t *testing.T) {
 	cfg := &MockCfg{}
 	err := Load(cfg)
 	if assert.Error(t, err) {
-		assert.EqualError(t, err, errors.MissingMandatoryParamError([]string{"MOCK_PASSWORD"}).Error())
+		assert.EqualError(t, err, errors.MissingStartupConfigurationError([]string{"MOCK_PASSWORD"}).Error())
 	}
 }
 

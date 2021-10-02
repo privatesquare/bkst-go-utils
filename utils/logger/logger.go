@@ -1,7 +1,9 @@
 package logger
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/go-resty/resty/v2"
 	"github.com/privatesquare/bkst-go-utils/utils/dateutils"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -9,16 +11,25 @@ import (
 )
 
 var (
-	logger *zap.Logger
+	logger                 *zap.Logger
+	DefaultLogLevel        = "INFO"
+	debugLogLevel          = "DEBUG"
+	AuthorizationHeaderKey = "Authorization"
 )
 
 func init() {
-	setLoggerConfig(getLoggerConfig())
+	SetLoggerConfig(GetLoggerConfig(DefaultLogLevel))
 }
 
-func getLoggerConfig() zap.Config {
+func GetLoggerConfig(logLevel string) zap.Config {
+	var zapLogLevel zapcore.Level
+	if logLevel == debugLogLevel {
+		zapLogLevel = zap.DebugLevel
+	} else {
+		zapLogLevel = zap.InfoLevel
+	}
 	return zap.Config{
-		Level:    zap.NewAtomicLevelAt(zap.InfoLevel),
+		Level:    zap.NewAtomicLevelAt(zapLogLevel),
 		Encoding: "json",
 		EncoderConfig: zapcore.EncoderConfig{
 			MessageKey:   "message",
@@ -33,7 +44,7 @@ func getLoggerConfig() zap.Config {
 	}
 }
 
-func setLoggerConfig(cfg zap.Config) {
+func SetLoggerConfig(cfg zap.Config) {
 	var err error
 	if logger, err = cfg.Build(); err != nil {
 		log.Fatalln("Unable to initialize logger: ", err)
@@ -53,6 +64,14 @@ func Error(msg string, err error, tags ...zapcore.Field) {
 		tags = append(tags, zap.NamedError("error", err))
 	}
 	logger.WithOptions(zap.AddCallerSkip(1)).Error(msg, tags...)
+}
+
+func Debug(msg string, tags ...zapcore.Field) {
+	logger.WithOptions(zap.AddCallerSkip(1)).Debug(msg, tags...)
+}
+
+func Panic(msg string, tags ...zapcore.Field) {
+	logger.WithOptions(zap.AddCallerSkip(1)).Panic(msg, tags...)
 }
 
 // GinZap returns a gin.HandlerFunc (middleware) that logs requests using uber-go/zap.
@@ -83,4 +102,13 @@ func GinZap() gin.HandlerFunc {
 			)
 		}
 	}
+}
+
+func RestyDebugLogs(resp *resty.Response) {
+	resp.Request.Header[AuthorizationHeaderKey] = []string{}
+	Debug(fmt.Sprintf("Request: %v", resp.Request))
+	Debug(fmt.Sprintf("Request Url: %v", resp.Request.URL))
+	Debug(fmt.Sprintf("Request Header: %v", resp.Request.Header))
+	Debug(fmt.Sprintf("Request Body: %v", resp.Request.Body))
+	Debug(fmt.Sprintf("Request Body: %v", resp.RawBody()))
 }
