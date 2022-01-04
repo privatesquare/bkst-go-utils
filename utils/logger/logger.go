@@ -55,6 +55,10 @@ func Info(msg string, tags ...zapcore.Field) {
 	logger.WithOptions(zap.AddCallerSkip(1)).Info(msg, tags...)
 }
 
+func Infof(format string, a ...interface{}) {
+	logger.WithOptions(zap.AddCallerSkip(1)).Info(fmt.Sprintf(format, a...))
+}
+
 func Warn(msg string, tags ...zapcore.Field) {
 	logger.WithOptions(zap.AddCallerSkip(1)).Warn(msg, tags...)
 }
@@ -67,7 +71,7 @@ func Error(msg string, err error, tags ...zapcore.Field) {
 }
 
 func Debug(msg string, tags ...zapcore.Field) {
-	logger.WithOptions(zap.AddCallerSkip(1)).Debug(msg, tags...)
+	logger.WithOptions(zap.AddCallerSkip(2)).Debug(msg, tags...)
 }
 
 func Panic(msg string, tags ...zapcore.Field) {
@@ -110,5 +114,5 @@ func RestyDebugLogs(resp *resty.Response) {
 	Debug(fmt.Sprintf("Request Url: %v", resp.Request.URL))
 	Debug(fmt.Sprintf("Request Header: %v", resp.Request.Header))
 	Debug(fmt.Sprintf("Request Body: %v", resp.Request.Body))
-	Debug(fmt.Sprintf("Request Body: %v", resp.RawBody()))
+	Debug(fmt.Sprintf("Response Body: %v", string(resp.Body())))
 }

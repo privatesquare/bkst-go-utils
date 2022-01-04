@@ -54,9 +54,9 @@ func TestConflictError(t *testing.T) {
 }
 
 func TestInternalServerError(t *testing.T) {
-	err := InternalServerError()
+	err := InternalServerError("")
 	assert.Equal(t, http.StatusInternalServerError, err.StatusCode)
-	assert.Equal(t, http.StatusText(http.StatusInternalServerError), err.Error)
+	assert.Equal(t, "", err.Error)
 	assert.Equal(t, internalServerErrMsg, err.Message)
 }
 
@@ -64,12 +64,6 @@ func TestMissingMandatoryParamError(t *testing.T) {
 	missingParams := []string{"username", "password"}
 	err := MissingMandatoryParamError(missingParams)
 	assert.Equal(t, fmt.Sprintf(MissingMandatoryParamErrMsg, missingParams), err.Error())
-}
-
-func TestMissingStartupConfigurationError(t *testing.T) {
-	missingParams := []string{"username", "password"}
-	err := MissingStartupConfigurationError(missingParams)
-	assert.Equal(t, fmt.Sprintf(missingStartupConfigurationErrMsg, missingParams), err.Error())
 }
 
 func TestPasswordEncryptionError(t *testing.T) {

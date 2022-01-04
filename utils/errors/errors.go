@@ -7,17 +7,16 @@ import (
 )
 
 const (
-	MissingMandatoryParamErrMsg       = "Missing mandatory parameter(s) : %v"
-	internalServerErrMsg              = "Unable to process the request due to an internal error. Please contact the system administrator"
-	missingStartupConfigurationErrMsg = "Server startup failed because of missing configuration : %v"
-	invalidPasswordErrMsg             = "password should be at least 8 characters long with at least one number, one uppercase letter, one lowercase letter and one special character"
-	passwordEncryptionErrMsg          = "password encryption error: %v"
-	passwordDecryptionErrMsg          = "password decryption error: %v"
-	regexCompileErrMsg                = "Unable to compile regex : %v"
-	jsonMarshalErrMsg                 = "JSON marshal error : %v"
-	jsonUnMarshalErrMsg               = "JSON unmarshal error : %v"
-	yamlMarshalErrMsg                 = "YAML marshal error : %v"
-	yamlUnmarshalErrMsg               = "YAML unmarshal error : %v"
+	MissingMandatoryParamErrMsg = "Missing mandatory parameter(s) : %v"
+	internalServerErrMsg        = "Unable to process the request due to an internal error. Please contact the system administrator"
+	invalidPasswordErrMsg       = "password should be at least 8 characters long with at least one number, one uppercase letter, one lowercase letter and one special character"
+	passwordEncryptionErrMsg    = "password encryption error: %v"
+	passwordDecryptionErrMsg    = "password decryption error: %v"
+	regexCompileErrMsg          = "Unable to compile regex : %v"
+	jsonMarshalErrMsg           = "JSON marshal error : %v"
+	jsonUnMarshalErrMsg         = "JSON unmarshal error : %v"
+	yamlMarshalErrMsg           = "YAML marshal error : %v"
+	yamlUnmarshalErrMsg         = "YAML unmarshal error : %v"
 )
 
 var (
@@ -42,9 +41,25 @@ func BadRequestError(message string) *RestErr {
 	}
 }
 
+func BadRequestErrorf(format string, a ...interface{}) *RestErr {
+	return &RestErr{
+		Message:    fmt.Sprintf(format, a...),
+		StatusCode: http.StatusBadRequest,
+		Error:      http.StatusText(http.StatusBadRequest),
+	}
+}
+
 func UnauthorizedError(message string) *RestErr {
 	return &RestErr{
 		Message:    message,
+		StatusCode: http.StatusUnauthorized,
+		Error:      http.StatusText(http.StatusUnauthorized),
+	}
+}
+
+func UnauthorizedErrorf(format string, a ...interface{}) *RestErr {
+	return &RestErr{
+		Message:    fmt.Sprintf(format, a...),
 		StatusCode: http.StatusUnauthorized,
 		Error:      http.StatusText(http.StatusUnauthorized),
 	}
@@ -58,9 +73,25 @@ func ForbiddenError(message string) *RestErr {
 	}
 }
 
+func ForbiddenErrorf(format string, a ...interface{}) *RestErr {
+	return &RestErr{
+		Message:    fmt.Sprintf(format, a...),
+		StatusCode: http.StatusForbidden,
+		Error:      http.StatusText(http.StatusForbidden),
+	}
+}
+
 func NotFoundError(message string) *RestErr {
 	return &RestErr{
 		Message:    message,
+		StatusCode: http.StatusNotFound,
+		Error:      http.StatusText(http.StatusNotFound),
+	}
+}
+
+func NotFoundErrorf(format string, a ...interface{}) *RestErr {
+	return &RestErr{
+		Message:    fmt.Sprintf(format, a...),
 		StatusCode: http.StatusNotFound,
 		Error:      http.StatusText(http.StatusNotFound),
 	}
@@ -74,20 +105,28 @@ func ConflictError(message string) *RestErr {
 	}
 }
 
-func InternalServerError() *RestErr {
+func ConflictErrorf(format string, a ...interface{}) *RestErr {
 	return &RestErr{
-		Message:    internalServerErrMsg,
-		StatusCode: http.StatusInternalServerError,
-		Error:      http.StatusText(http.StatusInternalServerError),
+		Message:    fmt.Sprintf(format, a...),
+		StatusCode: http.StatusConflict,
+		Error:      http.StatusText(http.StatusConflict),
 	}
 }
 
-// MissingStartupConfigurationError represents an error when a mandatory parameter is missing
-type MissingStartupConfigurationError []string
+func InternalServerError(message string) *RestErr {
+	return &RestErr{
+		Message:    internalServerErrMsg,
+		StatusCode: http.StatusInternalServerError,
+		Error:      message,
+	}
+}
 
-// Error returns the formatted MissingMandatoryParamError
-func (e MissingStartupConfigurationError) Error() string {
-	return fmt.Sprintf(missingStartupConfigurationErrMsg, []string(e))
+func InternalServerErrorf(format string, a ...interface{}) *RestErr {
+	return &RestErr{
+		Message:    internalServerErrMsg,
+		StatusCode: http.StatusInternalServerError,
+		Error:      fmt.Sprintf(format, a...),
+	}
 }
 
 // MissingMandatoryParamError represents an error when a mandatory parameter is missing
