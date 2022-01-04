@@ -7,7 +7,7 @@ import (
 
 const (
 	JsonStructFieldKey         = "json"
-	YamlStructFieldKey         = "yaml"
+	YmlStructFieldKey          = "yml"
 	MapstructureStructFieldKey = "mapstructure"
 )
 
@@ -15,8 +15,8 @@ func GetJsonFieldTagValue(structPointer interface{}, fieldPointer interface{}) s
 	return GetFieldTagValue(structPointer, fieldPointer, JsonStructFieldKey)
 }
 
-func GetYamlFieldTagValue(structPointer interface{}, fieldPointer interface{}) string {
-	return GetFieldTagValue(structPointer, fieldPointer, YamlStructFieldKey)
+func GetYmlFieldTagValue(structPointer interface{}, fieldPointer interface{}) string {
+	return GetFieldTagValue(structPointer, fieldPointer, YmlStructFieldKey)
 }
 
 func GetMapstructureFieldTagValue(structPointer interface{}, fieldPointer interface{}) string {
