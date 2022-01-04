@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/privatesquare/bkst-go-utils/utils/errors"
 	"github.com/privatesquare/bkst-go-utils/utils/logger"
 	"github.com/spf13/viper"
@@ -9,8 +10,9 @@ import (
 )
 
 const (
-	configLoadSuccessMsg = "Configuration loaded successfully"
-	configLoadErrMsg     = "Unable to load the required configuration"
+	missingConfigErrMsg  = "Missing mandatory configuration: %v"
+	configLoadSuccessMsg = "Configuration '%s' loaded successfully"
+	configLoadErrMsg     = "Error loading configuration '%s'"
 )
 
 var (
@@ -19,18 +21,26 @@ var (
 	configTypeValue = "env"
 )
 
+// AddConfigPath adds a new path where configuration can be found. The path is set in viper's configuration along
+// with the default current path ".".
 func AddConfigPath(configPath string) {
-	configPathValue = configPath
+	viper.AddConfigPath(configPathValue)
 }
 
+// SetConfigName sets the configNameValue global variable.
+// Use this function to set a custom config file name.
 func SetConfigName(configName string) {
 	configNameValue = configName
 }
 
+// SetConfigType sets the configTypeValue global variable.
+// Use this function to set a custom config file type.
 func SetConfigType(configType string) {
 	configTypeValue = configType
 }
 
+// Load reads the configuration from the config file and the environment. The function transforms the configuration
+// into the input struct. The input should be an address to a valid config struct.
 func Load(c interface{}) error {
 	viper.AddConfigPath(configPathValue)
 	viper.SetConfigName(configNameValue)
@@ -40,25 +50,28 @@ func Load(c interface{}) error {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		logger.Error(configLoadErrMsg, err)
+		logger.Error(fmt.Sprintf(configLoadErrMsg, reflect.TypeOf(c).Elem()), err)
 		return err
 	}
 
 	err = viper.Unmarshal(c)
 	if err != nil {
-		logger.Error(configLoadErrMsg, err)
+		logger.Error(fmt.Sprintf(configLoadErrMsg, reflect.TypeOf(c).Elem()), err)
 		return err
 	}
 
-	if err := validate(c); err != nil {
+	if err := Validate(c); err != nil {
 		return err
 	}
 
-	logger.Info(configLoadSuccessMsg)
+	logger.Info(fmt.Sprintf(configLoadSuccessMsg, reflect.TypeOf(c).Elem()))
 	return nil
 }
 
-func validate(c interface{}) error {
+// Validate check if all the required configuration is not empty.
+// The struct filed that is required should have a tag "required: true"
+// If a required struct field value is "" then the tag value of mapstructure will be returned.
+func Validate(c interface{}) error {
 	var missingParams []string
 	sr := reflect.ValueOf(c).Elem()
 
@@ -68,9 +81,7 @@ func validate(c interface{}) error {
 		}
 	}
 	if len(missingParams) > 0 {
-		err := errors.MissingStartupConfigurationError(missingParams)
-		logger.Error(err.Error(), nil)
-		return err
+		return errors.NewError(fmt.Sprintf(missingConfigErrMsg, missingParams))
 	}
 	return nil
 }

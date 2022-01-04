@@ -1,4 +1,4 @@
-package utils
+package slice
 
 const (
 	entryDoesNotExistMsg = "The entry %s does not exist in the slice"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/privatesquare/bkst-go-utils/utils/errors"
 	"github.com/privatesquare/bkst-go-utils/utils/logger"
-	utils "github.com/privatesquare/bkst-go-utils/utils/slice"
+	"github.com/privatesquare/bkst-go-utils/utils/slice"
 )
 
 var (
@@ -52,7 +52,7 @@ func (cnf *ServerConfig) validateServerProtocol() error {
 	if ServerCnf.Protocol == "" {
 		ServerCnf.Protocol = defaultServerProtocol
 	}
-	if !utils.EntryExists(validServerProtocols, cnf.Protocol) {
+	if !slice.EntryExists(validServerProtocols, cnf.Protocol) {
 		return errors.NewError(fmt.Sprintf(invalidServerProtocolErrMsg, cnf.Protocol))
 	}
 	return nil
@@ -62,7 +62,7 @@ func (cnf *ServerConfig) validateServerLogLevel() error {
 	if ServerCnf.LogLevel == "" {
 		ServerCnf.LogLevel = logger.DefaultLogLevel
 	}
-	if !utils.EntryExists(validServerLoglevel, cnf.LogLevel) {
+	if !slice.EntryExists(validServerLoglevel, cnf.LogLevel) {
 		return errors.NewError(fmt.Sprintf(invalidServerLogLevelErrMsg, cnf.LogLevel))
 	}
 	return nil
