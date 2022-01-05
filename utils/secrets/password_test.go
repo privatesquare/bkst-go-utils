@@ -1,10 +1,21 @@
 package secrets
 
 import (
+	"fmt"
 	"github.com/privatesquare/bkst-go-utils/utils/errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
+
+func TestPasswordEncryptionError(t *testing.T) {
+	err := errors.New("some error message")
+	assert.Equal(t, fmt.Sprintf(passwordEncryptionErrMsg, err), PasswordEncryptionError{Err: err}.Error())
+}
+
+func TestPasswordDecryptionError_Error(t *testing.T) {
+	err := errors.New("some error message")
+	assert.Equal(t, fmt.Sprintf(passwordDecryptionErrMsg, err), PasswordDecryptionError{Err: err}.Error())
+}
 
 func TestGetRandomPassword(t *testing.T) {
 	p0 := GetRandomPassword()
@@ -19,27 +30,27 @@ func TestVerifyPassword(t *testing.T) {
 	// Test if password has a number in it
 	password := "@Password"
 	err := VerifyPassword(password)
-	assert.EqualError(t, err, errors.InvalidPasswordError.Error())
+	assert.EqualError(t, err, InvalidPasswordError.Error())
 
 	// Test if password has a upper case letter
 	password = "@password123"
 	err = VerifyPassword(password)
-	assert.EqualError(t, err, errors.InvalidPasswordError.Error())
+	assert.EqualError(t, err, InvalidPasswordError.Error())
 
 	// Test if password has a lower case letter
 	password = "@PASSWORD123"
 	err = VerifyPassword(password)
-	assert.EqualError(t, err, errors.InvalidPasswordError.Error())
+	assert.EqualError(t, err, InvalidPasswordError.Error())
 
 	// Test if password has a special letter
 	password = "PASSWORD123"
 	err = VerifyPassword(password)
-	assert.EqualError(t, err, errors.InvalidPasswordError.Error())
+	assert.EqualError(t, err, InvalidPasswordError.Error())
 
 	// Test password length
 	password = "@123"
 	err = VerifyPassword(password)
-	assert.EqualError(t, err, errors.InvalidPasswordError.Error())
+	assert.EqualError(t, err, InvalidPasswordError.Error())
 
 	// Test valid password
 	password = "somePass@123"

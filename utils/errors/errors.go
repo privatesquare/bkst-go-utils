@@ -9,30 +9,26 @@ import (
 const (
 	MissingMandatoryParamErrMsg = "Missing mandatory parameter(s) : %v"
 	internalServerErrMsg        = "Unable to process the request due to an internal error. Please contact the system administrator"
-	invalidPasswordErrMsg       = "password should be at least 8 characters long with at least one number, one uppercase letter, one lowercase letter and one special character"
-	passwordEncryptionErrMsg    = "password encryption error: %v"
-	passwordDecryptionErrMsg    = "password decryption error: %v"
-	regexCompileErrMsg          = "Unable to compile regex : %v"
-	jsonMarshalErrMsg           = "JSON marshal error : %v"
-	jsonUnMarshalErrMsg         = "JSON unmarshal error : %v"
-	yamlMarshalErrMsg           = "YAML marshal error : %v"
-	yamlUnmarshalErrMsg         = "YAML unmarshal error : %v"
 )
 
-var (
-	InvalidPasswordError = errors.New(invalidPasswordErrMsg)
-)
-
+// RestErr represents a REST API error
 type RestErr struct {
 	Message    string `json:"message"`
 	StatusCode int    `json:"status"`
 	Error      string `json:"error"`
 }
 
-func NewError(msg string) error {
+// New returns a error.
+func New(msg string) error {
 	return errors.New(msg)
 }
 
+// Newf returns a formatted error.
+func Newf(format string, a ...interface{}) error {
+	return errors.New(fmt.Sprintf(format, a...))
+}
+
+// BadRequestError returns a bad request RestErr.
 func BadRequestError(message string) *RestErr {
 	return &RestErr{
 		Message:    message,
@@ -41,6 +37,7 @@ func BadRequestError(message string) *RestErr {
 	}
 }
 
+// BadRequestErrorf returns a formatted bad request RestErr.
 func BadRequestErrorf(format string, a ...interface{}) *RestErr {
 	return &RestErr{
 		Message:    fmt.Sprintf(format, a...),
@@ -49,6 +46,7 @@ func BadRequestErrorf(format string, a ...interface{}) *RestErr {
 	}
 }
 
+// UnauthorizedError returns a unauthorized RestErr.
 func UnauthorizedError(message string) *RestErr {
 	return &RestErr{
 		Message:    message,
@@ -57,6 +55,7 @@ func UnauthorizedError(message string) *RestErr {
 	}
 }
 
+// UnauthorizedErrorf returns a formatted unauthorized RestErr.
 func UnauthorizedErrorf(format string, a ...interface{}) *RestErr {
 	return &RestErr{
 		Message:    fmt.Sprintf(format, a...),
@@ -65,6 +64,7 @@ func UnauthorizedErrorf(format string, a ...interface{}) *RestErr {
 	}
 }
 
+// ForbiddenError returns a forbidden RestErr.
 func ForbiddenError(message string) *RestErr {
 	return &RestErr{
 		Message:    message,
@@ -73,6 +73,7 @@ func ForbiddenError(message string) *RestErr {
 	}
 }
 
+// ForbiddenErrorf returns a formatted forbidden RestErr.
 func ForbiddenErrorf(format string, a ...interface{}) *RestErr {
 	return &RestErr{
 		Message:    fmt.Sprintf(format, a...),
@@ -81,6 +82,7 @@ func ForbiddenErrorf(format string, a ...interface{}) *RestErr {
 	}
 }
 
+// NotFoundError returns a not found RestErr.
 func NotFoundError(message string) *RestErr {
 	return &RestErr{
 		Message:    message,
@@ -89,6 +91,7 @@ func NotFoundError(message string) *RestErr {
 	}
 }
 
+// NotFoundErrorf returns a fromatted not found RestErr.
 func NotFoundErrorf(format string, a ...interface{}) *RestErr {
 	return &RestErr{
 		Message:    fmt.Sprintf(format, a...),
@@ -97,6 +100,7 @@ func NotFoundErrorf(format string, a ...interface{}) *RestErr {
 	}
 }
 
+// ConflictError returns a conflict RestErr.
 func ConflictError(message string) *RestErr {
 	return &RestErr{
 		Message:    message,
@@ -105,6 +109,7 @@ func ConflictError(message string) *RestErr {
 	}
 }
 
+// ConflictErrorf returns a formatted conflict RestErr.
 func ConflictErrorf(format string, a ...interface{}) *RestErr {
 	return &RestErr{
 		Message:    fmt.Sprintf(format, a...),
@@ -113,6 +118,7 @@ func ConflictErrorf(format string, a ...interface{}) *RestErr {
 	}
 }
 
+// InternalServerError returns a internal server RestErr.
 func InternalServerError(message string) *RestErr {
 	return &RestErr{
 		Message:    internalServerErrMsg,
@@ -121,84 +127,11 @@ func InternalServerError(message string) *RestErr {
 	}
 }
 
+// InternalServerErrorf returns a formatted internal server RestErr.
 func InternalServerErrorf(format string, a ...interface{}) *RestErr {
 	return &RestErr{
 		Message:    internalServerErrMsg,
 		StatusCode: http.StatusInternalServerError,
 		Error:      fmt.Sprintf(format, a...),
 	}
-}
-
-// MissingMandatoryParamError represents an error when a mandatory parameter is missing
-type MissingMandatoryParamError []string
-
-// Error returns the formatted MissingMandatoryParamError
-func (e MissingMandatoryParamError) Error() string {
-	return fmt.Sprintf(MissingMandatoryParamErrMsg, []string(e))
-}
-
-type PasswordEncryptionError struct {
-	Err error
-}
-
-func (e PasswordEncryptionError) Error() string {
-	return fmt.Sprintf(passwordEncryptionErrMsg, e.Err)
-}
-
-type PasswordDecryptionError struct {
-	Err error
-}
-
-func (e PasswordDecryptionError) Error() string {
-	return fmt.Sprintf(passwordDecryptionErrMsg, e.Err)
-}
-
-// RegexCompileError represents an error when a regex compilation fails
-type RegexCompileError struct {
-	Err error
-}
-
-// Error returns the formatted RegexCompileError
-func (rc RegexCompileError) Error() string {
-	return fmt.Sprintf(regexCompileErrMsg, rc.Err)
-}
-
-// JSONMarshalError represents an error when json marshal fails
-type JSONMarshalError struct {
-	Err error
-}
-
-// Error returns the formatted JSONMarshalError
-func (jm JSONMarshalError) Error() string {
-	return fmt.Sprintf(jsonMarshalErrMsg, jm.Err)
-}
-
-// JSONUnMarshalError represents an error when json unmarshal fails
-type JSONUnMarshalError struct {
-	Err error
-}
-
-// Error returns the formatted JSONUnMarshalError
-func (jum JSONUnMarshalError) Error() string {
-	return fmt.Sprintf(jsonUnMarshalErrMsg, jum.Err)
-}
-
-// YAMLMarshalError represents an error when yaml marshal fails
-type YAMLMarshalError struct {
-	Err error
-}
-
-// Error returns the formatted YAMLMarshalError
-func (ym YAMLMarshalError) Error() string {
-	return fmt.Sprintf(yamlMarshalErrMsg, ym.Err)
-}
-
-// YAMLUnMarshalError represents an error when yaml unmarshal fails
-type YAMLUnMarshalError struct {
-	Err error
-}
-
-// Error returns the formatted YAMLUnMarshalError
-func (yum YAMLUnMarshalError) Error() string {
-	return fmt.Sprintf(yamlUnmarshalErrMsg, yum.Err)
 }

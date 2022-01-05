@@ -109,7 +109,7 @@ func TestError(t *testing.T) {
 	assert.True(t, strings.Contains(output, "\"level\":\"error\""))
 	assert.True(t, strings.Contains(output, msg))
 
-	err := errors.NewError(msg)
+	err := errors.New(msg)
 	Error(msg, err)
 
 	// Assert sink contents
@@ -149,7 +149,7 @@ func TestGinZapError(t *testing.T) {
 	msg := "some message"
 	r.GET(apiPath, func(ctx *gin.Context) {
 		ctx.Errors = append(ctx.Errors, &gin.Error{
-			Err: errors.NewError(""),
+			Err: errors.New(""),
 		})
 		ctx.JSON(http.StatusOK, msg)
 	})
