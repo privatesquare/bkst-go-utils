@@ -125,7 +125,7 @@ func TestLoad(t *testing.T) {
 			cnf := new(MockEnvConfig)
 			err = Load(cnf)
 			assert.Error(t, err)
-			assert.EqualError(t, err, errors.NewError(fmt.Sprintf(missingConfigErrMsg, []string{"MOCK_URL", "MOCK_USERNAME", "MOCK_PASSWORD"})).Error())
+			assert.EqualError(t, err, errors.New(fmt.Sprintf(missingConfigErrMsg, []string{"MOCK_URL", "MOCK_USERNAME", "MOCK_PASSWORD"})).Error())
 		})
 
 		t.Run("invalid config", func(t *testing.T) {
@@ -137,7 +137,7 @@ func TestLoad(t *testing.T) {
 			cnf := new(MockEnvConfig)
 			err = Load(cnf)
 			assert.Error(t, err)
-			assert.EqualError(t, err, errors.NewError(fmt.Sprintf(missingConfigErrMsg, []string{"MOCK_PASSWORD"})).Error())
+			assert.EqualError(t, err, errors.New(fmt.Sprintf(missingConfigErrMsg, []string{"MOCK_PASSWORD"})).Error())
 		})
 	})
 
@@ -168,7 +168,7 @@ func TestLoad(t *testing.T) {
 			cnf := new(MockJsonConfig)
 			err = Load(cnf)
 			assert.Error(t, err)
-			assert.EqualError(t, err, errors.NewError(fmt.Sprintf(missingConfigErrMsg, []string{"mock_url", "mock_username", "mock_password"})).Error())
+			assert.EqualError(t, err, errors.New(fmt.Sprintf(missingConfigErrMsg, []string{"mock_url", "mock_username", "mock_password"})).Error())
 		})
 
 		t.Run("invalid config", func(t *testing.T) {
@@ -181,7 +181,7 @@ func TestLoad(t *testing.T) {
 			cnf := new(MockJsonConfig)
 			err = Load(cnf)
 			assert.Error(t, err)
-			assert.EqualError(t, err, errors.NewError(fmt.Sprintf(missingConfigErrMsg, []string{"mock_password"})).Error())
+			assert.EqualError(t, err, errors.New(fmt.Sprintf(missingConfigErrMsg, []string{"mock_password"})).Error())
 		})
 	})
 
@@ -212,7 +212,7 @@ func TestLoad(t *testing.T) {
 			cnf := new(MockYmlConfig)
 			err = Load(cnf)
 			assert.Error(t, err)
-			assert.EqualError(t, err, errors.NewError(fmt.Sprintf(missingConfigErrMsg, []string{"mock_url", "mock_username", "mock_password"})).Error())
+			assert.EqualError(t, err, errors.New(fmt.Sprintf(missingConfigErrMsg, []string{"mock_url", "mock_username", "mock_password"})).Error())
 		})
 
 		t.Run("invalid config", func(t *testing.T) {
@@ -225,7 +225,7 @@ func TestLoad(t *testing.T) {
 			cnf := new(MockYmlConfig)
 			err = Load(cnf)
 			assert.Error(t, err)
-			assert.EqualError(t, err, errors.NewError(fmt.Sprintf(missingConfigErrMsg, []string{"mock_password"})).Error())
+			assert.EqualError(t, err, errors.New(fmt.Sprintf(missingConfigErrMsg, []string{"mock_password"})).Error())
 		})
 	})
 }

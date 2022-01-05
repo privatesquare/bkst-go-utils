@@ -81,7 +81,7 @@ func Validate(c interface{}) error {
 		}
 	}
 	if len(missingParams) > 0 {
-		return errors.NewError(fmt.Sprintf(missingConfigErrMsg, missingParams))
+		return errors.New(fmt.Sprintf(missingConfigErrMsg, missingParams))
 	}
 	return nil
 }
